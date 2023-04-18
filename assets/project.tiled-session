@@ -1,0 +1,58 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "/Users/alexk/Downloads/kenney_1-bit-pack/Tilemap/sample_fantasy.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "fileStates": {
+        "/Users/alexk/Downloads/kenney_1-bit-pack/Tilemap/sample_fantasy.tmx": {
+            "scale": 0.69,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 233.33333333333337,
+                "y": 215.94202898550736
+            }
+        },
+        "/Users/alexk/Downloads/kenney_1-bit-pack/Tilemap/tileset_colored.tsx": {
+            "scaleInDock": 1
+        },
+        "map1.tmj": {
+            "scale": 0.7481249999999999,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 319.46532999164583,
+                "y": 184.4611528822055
+            }
+        },
+        "tileset.tsj": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "last.imagePath": "/Users/alexk/repos/tinyrogue/assets",
+    "map.height": 23,
+    "map.lastUsedFormat": "json",
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "map.width": 40,
+    "openFiles": [
+        "tileset.tsj",
+        "/Users/alexk/Downloads/kenney_1-bit-pack/Tilemap/sample_fantasy.tmx",
+        "map1.tmj"
+    ],
+    "project": "project.tiled-project",
+    "property.type": "int",
+    "recentFiles": [
+        "tileset.tsj",
+        "map1.tmj",
+        "/Users/alexk/Downloads/kenney_1-bit-pack/Tilemap/sample_fantasy.tmx"
+    ],
+    "tileset.lastUsedFormat": "json",
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    }
+}
