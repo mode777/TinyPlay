@@ -12,19 +12,19 @@
             "scale": 0.69,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 233.33333333333337,
-                "y": 215.94202898550736
+                "x": 257.9710144927536,
+                "y": 214.4927536231885
             }
         },
         "/Users/alexk/Downloads/kenney_1-bit-pack/Tilemap/tileset_colored.tsx": {
             "scaleInDock": 1
         },
         "map1.tmj": {
-            "scale": 0.7481249999999999,
+            "scale": 1.1392,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 319.46532999164583,
-                "y": 184.4611528822055
+                "x": 197.50702247191015,
+                "y": 251.9311797752809
             }
         },
         "tileset.tsj": {

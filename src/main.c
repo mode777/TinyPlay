@@ -125,7 +125,7 @@ static int writeFile(const char* filename, const char* content) {
     return 1;
 }
 
-static void js_call_global_callback(duk_context *ctx, const char* funcname, int argnum, int* args){
+static int js_call_global_callback(duk_context *ctx, const char* funcname, int argnum, int* args){
     duk_get_global_string(ctx, funcname);
     if (duk_is_function(ctx, -1)) {
         // Push args
@@ -336,7 +336,7 @@ int main(int argc, char* argv[]) {
     SDL_SetSurfacePalette(surface, sdl_palette);
 
     // Allocate memory for the framebuffer
-    framebuffer = malloc(WIDTH * HEIGHT * sizeof(uint8_t));
+    framebuffer = calloc(WIDTH * HEIGHT, sizeof(uint8_t));
     if (!framebuffer) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to allocate framebuffer memory");
         return 1;
@@ -423,7 +423,7 @@ int main(int argc, char* argv[]) {
                     //printf("repeat: %d.\n", event.key.repeat);
                     if(event.key.repeat % 8 == 0){
                         keycode = event.key.keysym.sym;
-                        js_call_global_callback(ctx, "keypress", 1, &keycode);
+                        js_call_global_callback(ctx, "keypress", 1, (int*)&keycode);
                     }
                     break;
                 default:
