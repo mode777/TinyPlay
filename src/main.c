@@ -140,6 +140,31 @@ static int writeFile(const char* filename, const char* content) {
     return 1;
 }
 
+static void js_call_global_callback(duk_context *ctx, const char* funcname, int argnum, int* args){
+    duk_get_global_string(ctx, funcname);
+    if (duk_is_function(ctx, -1)) {
+        // Push args
+        for (size_t i = 0; i < argnum; i++)
+        {
+            duk_push_int(ctx, args[i]);
+        }
+        
+        // Call the function
+        int rc = duk_pcall(ctx, argnum);
+        if (rc != 0) {
+            duk_get_prop_string(ctx, -1, "stack");
+            const char* stack = duk_get_string_default(ctx, -1, "");
+            duk_pop(ctx);
+            //const char* error = duk_safe_to_string(ctx, -1);
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error calling %s: %s",funcname, stack);
+
+            return 1;
+        }
+        // Pop the return value from the stack
+        duk_pop(ctx);
+    }
+}
+
 static int js_draw_text(duk_context *ctx) {
     int ox = duk_require_int(ctx, 0);
     int y = duk_require_int(ctx, 1);
@@ -449,37 +474,32 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     free((void*)buf);
-
-    // Find the draw() function in the global object
-    duk_get_global_string(ctx, "draw");
-    if (!duk_is_function(ctx, -1)) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "No draw() function found");
-        return 1;
-    }
-
+   
     // Main loop
     while (!quit) {
         Uint64 tStart = SDL_GetPerformanceCounter();
         // Handle events
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                quit = 1;
-            }
+            SDL_KeyCode keycode;
+            switch (event.type) {
+                case SDL_QUIT:
+                    quit = true;
+                    break;
+                case SDL_KEYDOWN:
+                    //printf("repeat: %d.\n", event.key.repeat);
+                    if(event.key.repeat % 8 == 0){
+                        keycode = event.key.keysym.sym;
+                        js_call_global_callback(ctx, "keypress", 1, &keycode);
+                    }
+                    break;
+                default:
+                    break;
+            }   
         }
-        
-        // Call the draw() function
-        duk_dup(ctx, -1);
-        int rc = duk_pcall(ctx, 0);
-        if (rc != 0) {
-            duk_get_prop_string(ctx, -1, "stack");
-            const char* stack = duk_get_string_default(ctx, -1, "");
-            duk_pop(ctx);
-            //const char* error = duk_safe_to_string(ctx, -1);
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error calling draw(): %s", stack);
 
-            return 1;
-        }
-        duk_pop(ctx);
+        // Find the draw() function in the global object
+        js_call_global_callback(ctx, "draw", 0, NULL);
+        
 
         // Copy the framebuffer data to the surface
         SDL_LockSurface(surface);

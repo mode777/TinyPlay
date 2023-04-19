@@ -1,11 +1,8 @@
-var adder = require('module')
-var rot = require('rot')
+var ROT = require('rot')
 
-for (var key in rot) {
+for (var key in ROT) {
     print(key)
 }
-
-print(adder(2,3))
 
 var tileset = JSON.parse(load("assets/tileset.tsj"))
 
@@ -15,6 +12,15 @@ var colorLookup = tileset.tiles.reduce(function(p,c){
 },{})
 
 var map = JSON.parse(load("assets/map1.tmj"))
+
+var player = { x: 15, y: 8 } 
+
+function keypress(k){
+    if(k === KEY_UP) player.y--;
+    if(k === KEY_DOWN) player.y++;
+    if(k === KEY_LEFT) player.x--;
+    if(k === KEY_RIGHT) player.x++;
+}
 
 function draw(){
     color(12,0)
@@ -32,5 +38,5 @@ function draw(){
         }   
     }
     fg(12)
-    tile(15,8,77)
+    tile(player.x,player.y,77)
 }

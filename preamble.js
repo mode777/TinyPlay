@@ -14,3 +14,8 @@ Duktape.modSearch = function (id) {
 
     throw new Error('module not found: ' + id);
 }
+
+var KEY_LEFT = 1073741904
+var KEY_UP = 1073741906
+var KEY_RIGHT = 1073741903
+var KEY_DOWN = 1073741905
