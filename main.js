@@ -1,42 +1,37 @@
 var ROT = require('rot')
 
-for (var key in ROT) {
-    print(key)
+var Game = {
+    display: null,
+
+    init: function() {
+        this._generateMap();
+    }
 }
 
-var tileset = JSON.parse(load("assets/tileset.tsj"))
+Game.map = {}
+Game._generateMap = function() {
+    var digger = new ROT.Map.Digger();
 
-var colorLookup = tileset.tiles.reduce(function(p,c){
-    p[c.id] = c.properties[0].value
-    return p
-},{})
+    var digCallback = function(x, y, value) {
+        if (value) { return; } /* do not store walls */
 
-var map = JSON.parse(load("assets/map1.tmj"))
-
-var player = { x: 15, y: 8 } 
-
-function keypress(k){
-    if(k === KEY_UP) player.y--;
-    if(k === KEY_DOWN) player.y++;
-    if(k === KEY_LEFT) player.x--;
-    if(k === KEY_RIGHT) player.x++;
+        var key = x+","+y;
+        this.map[key] = ".";
+    }
+    digger.create(digCallback.bind(this));
+}
+Game._drawWholeMap = function() {
+    for (var key in this.map) {
+        var parts = key.split(",")
+        var x = parseInt(parts[0])
+        var y = parseInt(parts[1])
+        tile(x, y, 1)
+    }
 }
 
 function draw(){
-    color(12,0)
     clear()
-    var data = map.layers[0].data
-    for (var y = 0; y < map.height; y++) {
-        for (var x = 0; x < map.width; x++) {
-            var t = data[y*map.width+x]-1
-            if(t===0) continue;
-            var c = colorLookup[t]
-            if(c === undefined) c = 12
-            flip(x%2,0)
-            color(c,0)
-            tile(x,y,t)
-        }   
-    }
-    fg(12)
-    tile(player.x,player.y,77)
+    Game._drawWholeMap()
 }
+
+Game.init()

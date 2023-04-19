@@ -17,23 +17,8 @@
 static uint8_t* framebuffer;
 static SDL_Renderer* renderer;
 static SDL_Window* window;
-static int bg = 0;
-static int fg = 13;
-static bool flipH = false;
-static bool flipV = false;
 
-static void decodeId(uint32_t id, int* out_ox, int* out_oy, int* out_fg, int* out_bg){
-    *out_ox = ((id&0xFFFF)%TILES_X) * TILESIZE;
-    *out_oy = ((id&0xFFFF)/TILES_X) * TILESIZE;
-    *out_fg = (id&0x000F0000)>>16;
-    *out_bg = (id&0x00F00000)>>20;
-}
-
-static uint32_t encodeId(uint32_t tileId, int fg, int bg){
-    return tileId | (fg<<16) | (bg<<20);
-}
-
-static void plotSprite(int x, int y, uint32_t id){
+static void plotSprite(int x, int y, uint32_t id, uint32_t fg, uint32_t bg, bool flipH, bool flipV){
     if(x+16<0 || x >= WIDTH || y+16<0 || y >= HEIGHT){
         return;
     }
@@ -63,7 +48,7 @@ static void plotSprite(int x, int y, uint32_t id){
     }
 }
 
-static void plotGlyph(int x, int y, CharDescriptor* c){
+static void plotGlyph(int x, int y, CharDescriptor* c, uint32_t fg, uint32_t bg){
     if(x+c->width<0 || x >= WIDTH || y+c->height<0 || y >= HEIGHT){
         return;
     }
@@ -168,6 +153,8 @@ static void js_call_global_callback(duk_context *ctx, const char* funcname, int 
 static int js_draw_text(duk_context *ctx) {
     int ox = duk_require_int(ctx, 0);
     int y = duk_require_int(ctx, 1);
+    int fg = duk_get_int_default(ctx, 3, 13);
+    int bg = duk_get_int_default(ctx, 4, 0);
     
     CharDescriptor* cd;
     int i = 0;
@@ -184,7 +171,7 @@ static int js_draw_text(duk_context *ctx) {
             if (cd == NULL) {
                 cd = getChar('?');
             }
-            if(codepoint != ' ') plotGlyph(x + cd->xoffset, y + cd->yoffset, cd);
+            if(codepoint != ' ') plotGlyph(x + cd->xoffset, y + cd->yoffset, cd, fg, bg);
             x += cd->xadvance;
         }
     }
@@ -201,20 +188,15 @@ static duk_ret_t native_print(duk_context *ctx) {
     return 0;
 }
 
-static duk_ret_t js_get_id(duk_context *ctx) {
-    uint32_t tileId = (uint32_t) duk_require_uint(ctx, 0);
-    int fg = (int) duk_require_int(ctx, 1);
-    int bg = (int) duk_require_int(ctx, 2);
-    uint32_t id = encodeId(tileId, fg, bg);
-    duk_push_uint(ctx, id);
-    return 1;
-}
-
 static duk_ret_t js_sprite(duk_context *ctx) {
     int x = (int) duk_require_int(ctx, 0);
     int y = (int) duk_require_int(ctx, 1);
     uint32_t id = (uint32_t) duk_require_uint(ctx, 2);
-    plotSprite(x, y, id);
+    int fg = duk_get_int_default(ctx, 3, 13);
+    int bg = duk_get_int_default(ctx, 4, 0);
+    int flipH = duk_get_boolean_default(ctx, 5, false);
+    int flipV = duk_get_boolean_default(ctx, 6, false);
+    plotSprite(x, y, id, fg, bg, flipH, flipV);
     return 0;
 }
 
@@ -222,11 +204,16 @@ static duk_ret_t js_tile(duk_context *ctx) {
     int x = (int) duk_require_int(ctx, 0);
     int y = (int) duk_require_int(ctx, 1);
     uint32_t id = (uint32_t) duk_require_uint(ctx, 2);
-    plotSprite(x*TILESIZE, y*TILESIZE, id);
+    int fg = duk_get_int_default(ctx, 3, 13);
+    int bg = duk_get_int_default(ctx, 4, 0);
+    int flipH = duk_get_boolean_default(ctx, 5, false);
+    int flipV = duk_get_boolean_default(ctx, 6, false);
+    plotSprite(x*TILESIZE, y*TILESIZE, id, fg, bg, flipH, flipV);
     return 0;
 }
 
 static duk_ret_t js_clear(duk_context *ctx) {
+    int bg = duk_get_int_default(ctx, 0, 0);
     memset((void*)framebuffer, bg, WIDTH*HEIGHT);
     return 0;
 }
@@ -266,43 +253,6 @@ static duk_ret_t js_mouse(duk_context *ctx) {
     return 1;
 }
 
-static int js_set_fg(duk_context *ctx) {
-    int color = duk_require_int(ctx, 0);
-    if (color < 0 || color > 15) {
-        return duk_error(ctx, DUK_ERR_RANGE_ERROR, "Invalid color value");
-    }
-    fg = color;
-    return 0;
-}
-
-static int js_set_bg(duk_context *ctx) {
-    int color = duk_require_int(ctx, 0);
-    if (color < 0 || color > 15) {
-        return duk_error(ctx, DUK_ERR_RANGE_ERROR, "Invalid color value");
-    }
-    bg = color;
-    return 0;
-}
-
-static int js_set_color(duk_context *ctx) {
-    int afg = duk_require_int(ctx, 0);
-    int abg = duk_require_int(ctx, 1);
-    if (afg < 0 || afg > 15 || abg < 0 || abg > 15) {
-        return duk_error(ctx, DUK_ERR_RANGE_ERROR, "Invalid color value");
-    }
-    bg = abg;
-    fg = afg;
-    return 0;
-}
-
-static int js_set_flip(duk_context *ctx) {
-    bool flip_h = duk_require_uint(ctx, 0);
-    bool flip_v = duk_require_uint(ctx, 1);
-    flipH = flip_h;
-    flipV = flip_v;
-    return 0;
-}
-
 // Function to bind the 'load' function to JavaScript
 static duk_ret_t js_load(duk_context* ctx) {
     const char* filename = duk_require_string(ctx, 0);
@@ -323,7 +273,6 @@ static duk_ret_t js_save(duk_context* ctx) {
     duk_push_boolean(ctx, result);
     return 1;
 }
-
 
 int main(int argc, char* argv[]) {
     SDL_Surface* surface;
@@ -402,16 +351,13 @@ int main(int argc, char* argv[]) {
     duk_push_c_function(ctx, native_print, DUK_VARARGS);
     duk_put_global_string(ctx, "print");
 
-    duk_push_c_function(ctx, js_get_id, 3);
-    duk_put_global_string(ctx, "getId");
-
-    duk_push_c_function(ctx, js_sprite, 3);
+    duk_push_c_function(ctx, js_sprite, 7);
     duk_put_global_string(ctx, "sprite");
 
-    duk_push_c_function(ctx, js_tile, 3);
+    duk_push_c_function(ctx, js_tile, 7);
     duk_put_global_string(ctx, "tile");
 
-    duk_push_c_function(ctx, js_clear, 0);
+    duk_push_c_function(ctx, js_clear, 1);
     duk_put_global_string(ctx, "clear");
 
     duk_push_number(ctx, TILESIZE);
@@ -423,19 +369,7 @@ int main(int argc, char* argv[]) {
     duk_push_c_function(ctx, js_mouse, 0);
     duk_put_global_string(ctx, "mouse");
 
-    duk_push_c_function(ctx, js_set_bg, 1);
-    duk_put_global_string(ctx, "bg");
-
-    duk_push_c_function(ctx, js_set_fg, 1);
-    duk_put_global_string(ctx, "fg");
-
-    duk_push_c_function(ctx, js_set_color, 2);
-    duk_put_global_string(ctx, "color");
-
-    duk_push_c_function(ctx, js_set_flip, 2);
-    duk_put_global_string(ctx, "flip");
-
-    duk_push_c_function(ctx, js_draw_text, 3);
+    duk_push_c_function(ctx, js_draw_text, 5);
     duk_put_global_string(ctx, "text");
 
     duk_push_c_function(ctx, js_load, 1);

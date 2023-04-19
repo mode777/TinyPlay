@@ -1,24 +1,17 @@
 function drawPal(x,y){
     for (var c = 0; c < 16; c++) {
-        color(0,c)
-        tile((x+c),y, 0)
-        color((c+1)%16, 0)
-        tile((x+c),y, 725)
+        tile((x+c),y, 0, 0, c)
+        tile((x+c),y, 725, (c+1)%16, 0)
     }
 }
 
 function drawWin(x,y,w,h){
     var corner = 155
     var side = 154
-    color(13,0)
-    tile(x,y,corner)
-    flip(1,0)
-    tile(x+w,y,corner)
-    flip(0,1)
-    tile(x,y+h,corner)
-    flip(1,1)
-    tile(x+w,y+h,corner)
-    flip(0,0)
+    tile(x,y,corner, WHITE)
+    tile(x+w,y,corner, WHITE, 0, true, false)
+    tile(x,y+h,corner, WHITE, 0, false, true)
+    tile(x+w,y+h,corner, WHITE, 0, true, true)
 }
 
 var str = load("lorem.txt")
@@ -29,8 +22,7 @@ function draw(){
     //print(mpos[0],mpos[1])
     var mx = Math.floor((mpos[0]+8)/16)*16
     var my = Math.floor((mpos[1]+8)/16)*16
-    color(12,0)
-    clear()
+    clear(0)
     tile(0,0,761)
     tile(1,0,922)
     tile(2,0,923)
@@ -42,11 +34,9 @@ function draw(){
 
     drawWin(0,1,16,16)
 
-    color(2,0)
-    sprite(mpos[0],mpos[1], 1007)
-    sprite(mx,my,623)
-    color(12,0)
-    text(200,200,str)
+    sprite(mpos[0],mpos[1], 1007, RED)
+    sprite(mx,my,623, RED)
+    text(200,200,str, WHITE)
 }
 
 
