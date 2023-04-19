@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <duktape.h>
+#include <duk_module_duktape.h>
 
 #include "font.h"
 #include "kenney_1bit.h"
@@ -218,7 +219,6 @@ static duk_ret_t js_mouse(duk_context *ctx) {
     int x, y;
     uint32_t state = SDL_GetMouseState(&x, &y);
 
-    
     float sx, sy;
     SDL_RenderGetScale(renderer, &sx, &sy);
     int rw, rh;
@@ -370,6 +370,7 @@ int main(int argc, char* argv[]) {
 
     // Initialize Duktape
     duk_context *ctx = duk_create_heap_default();
+    duk_module_duktape_init(ctx);
 
     duk_push_global_object(ctx);
 
@@ -430,10 +431,19 @@ int main(int argc, char* argv[]) {
 
     duk_pop(ctx);
 
-    // Load and evaluate a JavaScript file
-    const char* filename = "main.js";
-    const char* buf = readFile(filename);
+    // Load and evaluate preamble file
+    const char* buf = readFile("preamble.js");
     int rc = duk_peval_string(ctx, buf);
+    if (rc != 0) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error evaluating JavaScript: %s", duk_safe_to_string(ctx, -1));
+        return 1;
+    }
+    free((void*)buf);
+
+    // Load and evaluate main JavaScript file
+    const char* filename = "main.js";
+    buf = readFile(filename);
+    rc = duk_peval_string(ctx, buf);
     if (rc != 0) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error evaluating JavaScript: %s", duk_safe_to_string(ctx, -1));
         return 1;

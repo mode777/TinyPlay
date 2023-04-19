@@ -1,3 +1,12 @@
+var adder = require('module')
+var rot = require('rot')
+
+for (var key in rot) {
+    print(key)
+}
+
+print(adder(2,3))
+
 var tileset = JSON.parse(load("assets/tileset.tsj"))
 
 var colorLookup = tileset.tiles.reduce(function(p,c){

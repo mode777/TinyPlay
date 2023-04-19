@@ -30,8 +30,8 @@ find_package(SDL2 REQUIRED)
 
 # Add Duktape
 set(DUKTAPEDIR ${CMAKE_CURRENT_LIST_DIR}/thirdparty/duktape_combine)
-add_library(duktape STATIC ${DUKTAPEDIR}/duktape.c)
-target_include_directories(duktape PUBLIC ${DUKTAPEDIR})
+add_library(duktape STATIC ${DUKTAPEDIR}/duktape.c thirdparty/duktape/extras/module-duktape/duk_module_duktape.c)
+target_include_directories(duktape PUBLIC ${DUKTAPEDIR} thirdparty/duktape/extras/module-duktape)
 if("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
   target_link_libraries(duktape
     m dl rt
