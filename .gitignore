@@ -10,6 +10,6 @@ build-wasm/
 /kanvas
 /kanvas.exe
 /*.storage
-img2h
+./img2h
 img2h.exe
 trogue
