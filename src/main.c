@@ -153,7 +153,7 @@ static int js_call_global_callback(duk_context *ctx, const char* funcname, int a
 static int js_draw_text(duk_context *ctx) {
     int ox = duk_require_int(ctx, 0);
     int y = duk_require_int(ctx, 1);
-    int fg = duk_get_int_default(ctx, 3, 13);
+    int fg = duk_get_int_default(ctx, 3, 12);
     int bg = duk_get_int_default(ctx, 4, 0);
     
     CharDescriptor* cd;
@@ -192,7 +192,7 @@ static duk_ret_t js_sprite(duk_context *ctx) {
     int x = (int) duk_require_int(ctx, 0);
     int y = (int) duk_require_int(ctx, 1);
     uint32_t id = (uint32_t) duk_require_uint(ctx, 2);
-    int fg = duk_get_int_default(ctx, 3, 13);
+    int fg = duk_get_int_default(ctx, 3, 12);
     int bg = duk_get_int_default(ctx, 4, 0);
     int flipH = duk_get_boolean_default(ctx, 5, false);
     int flipV = duk_get_boolean_default(ctx, 6, false);
@@ -204,7 +204,7 @@ static duk_ret_t js_tile(duk_context *ctx) {
     int x = (int) duk_require_int(ctx, 0);
     int y = (int) duk_require_int(ctx, 1);
     uint32_t id = (uint32_t) duk_require_uint(ctx, 2);
-    int fg = duk_get_int_default(ctx, 3, 13);
+    int fg = duk_get_int_default(ctx, 3, 12);
     int bg = duk_get_int_default(ctx, 4, 0);
     int flipH = duk_get_boolean_default(ctx, 5, false);
     int flipV = duk_get_boolean_default(ctx, 6, false);
@@ -272,6 +272,26 @@ static duk_ret_t js_save(duk_context* ctx) {
     int result = writeFile(filename, content);
     duk_push_boolean(ctx, result);
     return 1;
+}
+
+static duk_ret_t js_clear_rect(duk_context* ctx){
+    int x = (int) duk_require_int(ctx, 0);
+    int y = (int) duk_require_int(ctx, 1);
+    int w = (int) duk_require_uint(ctx, 2);
+    int h = (int) duk_require_uint(ctx, 3);
+    int c = (int) duk_require_uint(ctx, 4);
+
+    if(x<0) return 0;
+    if(y<0) return 0;
+    if((x+w) > WIDTH) return 0; 
+    if((y+h) > HEIGHT) return 0;
+
+    for (size_t cy = y; cy < y+h; cy++)
+    {
+        memset(&framebuffer[cy*WIDTH+x],c,w);
+    }
+    
+    return 0;
 }
 
 int main(int argc, char* argv[]) {
@@ -360,9 +380,6 @@ int main(int argc, char* argv[]) {
     duk_push_c_function(ctx, js_clear, 1);
     duk_put_global_string(ctx, "clear");
 
-    duk_push_number(ctx, TILESIZE);
-    duk_put_global_string(ctx, "TILESIZE");
-
     duk_push_c_function(ctx, js_ticks, 0);
     duk_put_global_string(ctx, "ticks");
 
@@ -377,6 +394,9 @@ int main(int argc, char* argv[]) {
 
     duk_push_c_function(ctx, js_save, 2);
     duk_put_global_string(ctx, "save");
+
+    duk_push_c_function(ctx, js_clear_rect, 5);
+    duk_put_global_string(ctx, "rect");    
 
     // Register the native_print() function as console.log()
     int objIndex = duk_push_object(ctx);

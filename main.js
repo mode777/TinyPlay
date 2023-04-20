@@ -1,4 +1,5 @@
 var ROT = require('rot')
+var data = require('data')
 ROT.RNG.setSeed(19865);
 
 var noise = new ROT.Noise.Simplex();
@@ -41,8 +42,13 @@ function draw(){
     clear()
     for (var y=0;y<24;y++) {
         for (var x=0;x<40;x++) {
-            tile(x,y,map[y*40+x],6)
+            var id = map[y*40+x]
+            var d = data[id]
+            if(!d) continue
+            tile(x,y,id,d.fg)
         }
     }
     tile(player.x,player.y,77,WHITE)
+    rect(0,0,640,14,1)
+    text(12,0,'('+player.x+','+player.y+')')
 }

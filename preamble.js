@@ -37,3 +37,7 @@ var WHITE = 12
 var GREY = 13
 var DARK_GREY = 14
 var GREY_BLUE = 15
+
+var TILESIZE = 16
+var SCREEN_WIDTH = 640
+var SCREEN_HEIGHT = 360
