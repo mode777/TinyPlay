@@ -4,6 +4,7 @@ declare module 'tinyplay' {
         function print(...params: any): void;
         function clear(color?: number): void;
         function tile(x: number, y: number, tile: number, fg?: number, bg?: number): void;
+        function sprite(x: number, y: number, tile: number, fg?: number, bg?: number): void;
         function rect(x: number, y: number, w: number, h: number, fg?: number): void;
         function text(x: number, y: number, t: string): void;
 

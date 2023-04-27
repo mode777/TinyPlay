@@ -125,6 +125,22 @@ static int writeFile(const char* filename, const char* content) {
     return 1;
 }
 
+static void js_run_microtasks(duk_context *ctx){
+    duk_get_global_string(ctx, "Promise");
+    duk_get_prop_string(ctx, -1, "runQueue");
+    // Call the function
+    int rc = duk_pcall(ctx, 0);
+    if (rc != 0) {
+        duk_get_prop_string(ctx, -1, "stack");
+        const char* stack = duk_get_string_default(ctx, -1, "");
+        duk_pop(ctx);
+        //const char* error = duk_safe_to_string(ctx, -1);
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error calling Promise.runQueue: %s", stack);
+    }
+    // Pop the return value and the Promise object from the stack
+    duk_pop_2(ctx);
+}
+
 static void js_call_global_callback(duk_context *ctx, const char* funcname, int argnum, int* args){
     duk_get_global_string(ctx, funcname);
     if (duk_is_function(ctx, -1)) {
@@ -281,11 +297,12 @@ static duk_ret_t js_clear_rect(duk_context* ctx){
     int h = (int) duk_require_uint(ctx, 3);
     int c = (int) duk_require_uint(ctx, 4);
 
-    if(x<0) return 0;
-    if(y<0) return 0;
-    if((x+w) > WIDTH) return 0; 
-    if((y+h) > HEIGHT) return 0;
-
+    if(x > WIDTH || y > HEIGHT) return 0;
+    int diffX = WIDTH - (x+w);
+    if(diffX < 0) w += diffX;
+    int diffY = HEIGHT - (y+h);
+    if(diffY < 0) h += diffY;
+     
     for (size_t cy = y; cy < y+h; cy++)
     {
         memset(&framebuffer[cy*WIDTH+x],c,w);
@@ -330,13 +347,13 @@ int main(int argc, char* argv[]) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to create window: %s", SDL_GetError());
         return 1;
     }
-    SDL_ShowCursor(SDL_DISABLE);
+    //SDL_ShowCursor(SDL_DISABLE);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
     if (!renderer) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to create renderer: %s", SDL_GetError());
         return 1;
     }
-    SDL_RenderSetIntegerScale(renderer, 1);
+    //SDL_RenderSetIntegerScale(renderer, 1);
     SDL_RenderSetLogicalSize(renderer, WIDTH, HEIGHT);
 
     // Create a palette and set the colors
@@ -410,9 +427,18 @@ int main(int argc, char* argv[]) {
 
     duk_pop(ctx);
 
-    // Load and evaluate preamble file
-    const char* buf = readFile("preamble.js");
+    // Run promise polyfill
+    const char* buf = readFile("promise.js");
     int rc = duk_peval_string(ctx, buf);
+    if (rc != 0) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error evaluating JavaScript: %s", duk_safe_to_string(ctx, -1));
+        return 1;
+    }
+    free((void*)buf);
+
+    // Load and evaluate preamble file
+    buf = readFile("preamble.js");
+    rc = duk_peval_string(ctx, buf);
     if (rc != 0) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error evaluating JavaScript: %s", duk_safe_to_string(ctx, -1));
         return 1;
@@ -453,6 +479,7 @@ int main(int argc, char* argv[]) {
 
         // Find the draw() function in the global object
         js_call_global_callback(ctx, "draw", 0, NULL);
+        js_run_microtasks(ctx);
         
 
         // Copy the framebuffer data to the surface
