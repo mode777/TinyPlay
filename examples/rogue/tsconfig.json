@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+      "target": "es5",
+      "lib": ["ES5"],
+      "module": "commonjs",
+      "strict": true,
+      "esModuleInterop": true,
+      "forceConsistentCasingInFileNames": true,
+      "paths": {
+        "rot-js": ["./node_modules/rot-js/dist/rot"]
+      }
+    }
+  }
+  

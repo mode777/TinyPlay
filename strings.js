@@ -1,0 +1,36 @@
+module.exports = [
+    'Nothing of interest here',
+    // 1-10 tree desc
+    "You encounter a thick grove of oak trees, their gnarled trunks blocking your path.", 
+    "The dense foliage of a maple tree forces you to take a detour around it.", 
+    "A towering pine tree looms in your path, its branches reaching out to block your way.", 
+    "You come across a row of slender birch trees, their papery bark peeling in the sunlight.", 
+    "A massive redwood tree stretches up towards the sky, obstructing your progress.", 
+    "The twisted branches of a willow tree dangle in your path, swaying in the breeze.", 
+    "You find yourself facing a dense thicket of thorn bushes, their sharp spines blocking your way.", 
+    "The low-hanging branches of a magnolia tree create a natural barrier, forcing you to find another route.", 
+    "A wall of prickly cactus plants blocks your path, their spiny needles posing a formidable challenge.", 
+    "A grove of fruit trees blocks your path, their heavy branches laden with ripe fruit tempting you to stop and rest.",
+    // 11-20 grass desc
+    "You feel the sharp prick of short, spiky grass beneath your feet.", 
+    "The soft, cool blades of grass brush against your ankles as you walk.", 
+    "The long grass around you is perfect for hiding and sneaking around.", 
+    "The ground is uneven with patches of tall grass swaying in the wind around you.", 
+    "You sink your feet into the thick, lush grass, finding it surprisingly comfortable.", 
+    "The sound of rustling grass fills your ears as you walk through this field.", 
+    "Thin and delicate blades of grass bend easily under your weight.", 
+    "You hear the crunching of dry, tall grass with every step you take.", 
+    "The yellowed and sparse grass indicates a lack of water in this area.", 
+    "The dewy grass beneath your feet dampens your shoes with each step you take.",
+    // 21-30 stone desc
+    "A massive boulder blocks your path, its rough surface looming in front of you.", 
+    "A jutting outcropping of jagged rocks obstructs your progress, leaving you no choice but to find a way around.", 
+    "You come across a sheer cliff face, its rough surface too steep to climb.", 
+    "A sharp, craggy rock formation blocks your way, its sharp edges looking treacherous.", 
+    "A field of sharp, pointy rocks impedes your progress, leaving you to navigate carefully.", 
+    "A wide crevasse splits the ground ahead of you, its steep walls preventing you from crossing.", 
+    "You encounter a pile of large, jagged rocks, each one looking like a potential obstacle.", 
+    "A narrow gorge stretches out in front of you, its steep walls creating a natural barrier.", 
+    "A wall of smooth, polished rocks blocks your path, creating a formidable obstacle.", 
+    "You find yourself facing a field of massive, imposing boulders, each one seeming more insurmountable than the last."
+]

@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "/Users/alexk/Downloads/kenney_1-bit-pack/Tilemap/sample_fantasy.tmx",
+    "activeFile": "map1.tmj",
     "expandedProjectPaths": [
         "."
     ],
@@ -12,8 +12,8 @@
             "scale": 0.69,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 257.9710144927536,
-                "y": 214.4927536231885
+                "x": 382.608695652174,
+                "y": 192.7536231884058
             }
         },
         "/Users/alexk/Downloads/kenney_1-bit-pack/Tilemap/tileset_colored.tsx": {
@@ -23,12 +23,12 @@
             "scale": 1.1392,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 197.50702247191015,
+                "x": 72.85814606741573,
                 "y": 251.9311797752809
             }
         },
         "tileset.tsj": {
-            "scaleInDock": 1,
+            "scaleInDock": 2.3327,
             "scaleInEditor": 1
         }
     },
@@ -47,8 +47,8 @@
     "property.type": "int",
     "recentFiles": [
         "tileset.tsj",
-        "map1.tmj",
-        "/Users/alexk/Downloads/kenney_1-bit-pack/Tilemap/sample_fantasy.tmx"
+        "/Users/alexk/Downloads/kenney_1-bit-pack/Tilemap/sample_fantasy.tmx",
+        "map1.tmj"
     ],
     "tileset.lastUsedFormat": "json",
     "tileset.tileSize": {

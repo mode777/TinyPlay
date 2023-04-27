@@ -1,3 +1,15 @@
+if (typeof global === 'undefined') {
+    (function () {
+        var global = new Function('return this;')();
+        Object.defineProperty(global, 'global', {
+            value: global,
+            writable: true,
+            enumerable: false,
+            configurable: true
+        });
+    })();
+}
+
 Duktape.modSearch = function (id) {
     /* readFile() reads a file from disk, and returns a string or undefined.
      * 'id' is in resolved canonical form so it only contains terms and
@@ -13,6 +25,12 @@ Duktape.modSearch = function (id) {
     }
 
     throw new Error('module not found: ' + id);
+}
+
+__internal__ = {
+    getFolder: function(path){
+        
+    }
 }
 
 var KEY_LEFT = 1073741904

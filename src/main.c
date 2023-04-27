@@ -125,7 +125,7 @@ static int writeFile(const char* filename, const char* content) {
     return 1;
 }
 
-static int js_call_global_callback(duk_context *ctx, const char* funcname, int argnum, int* args){
+static void js_call_global_callback(duk_context *ctx, const char* funcname, int argnum, int* args){
     duk_get_global_string(ctx, funcname);
     if (duk_is_function(ctx, -1)) {
         // Push args
@@ -142,10 +142,10 @@ static int js_call_global_callback(duk_context *ctx, const char* funcname, int a
             duk_pop(ctx);
             //const char* error = duk_safe_to_string(ctx, -1);
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error calling %s: %s",funcname, stack);
-
-            return 1;
         }
         // Pop the return value from the stack
+        duk_pop(ctx);
+    } else {
         duk_pop(ctx);
     }
 }
@@ -420,7 +420,7 @@ int main(int argc, char* argv[]) {
     free((void*)buf);
 
     // Load and evaluate main JavaScript file
-    const char* filename = "main.js";
+    const char* filename = argc > 1 ? argv[1] : "main.js";
     buf = readFile(filename);
     rc = duk_peval_string(ctx, buf);
     if (rc != 0) {
@@ -428,7 +428,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     free((void*)buf);
-   
+
     // Main loop
     while (!quit) {
         Uint64 tStart = SDL_GetPerformanceCounter();
