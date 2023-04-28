@@ -26,13 +26,17 @@ global.draw = () => {
     text(12, 0, info)
 }
 
-const p = Promise.resolve('string');
-
-async function f(){
-    const v = await p;
-    print(v)
+function delay(time: number) {
+    return new Promise(resolve => setTimeout(resolve, time));
 }
 
-f()
+(async function mainAsync(){
+    let c = 0
+    while(true){
+        await delay(1000)
+        print(c++)
+    }
+})()
+
 const chunk = new Chunk(32,22, noise)
 chunk.fill(player.x, player.y)

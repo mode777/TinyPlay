@@ -7,6 +7,7 @@ declare module 'tinyplay' {
         function sprite(x: number, y: number, tile: number, fg?: number, bg?: number): void;
         function rect(x: number, y: number, w: number, h: number, fg?: number): void;
         function text(x: number, y: number, t: string): void;
+        function ticks(): number;
 
         var draw: () => void;
         var keypress: (key: number) => void;

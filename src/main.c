@@ -436,6 +436,15 @@ int main(int argc, char* argv[]) {
     }
     free((void*)buf);
 
+    // Load and evaluate timers
+    buf = readFile("timers.js");
+    rc = duk_peval_string(ctx, buf);
+    if (rc != 0) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error evaluating JavaScript: %s", duk_safe_to_string(ctx, -1));
+        return 1;
+    }
+    free((void*)buf);
+
     // Load and evaluate preamble file
     buf = readFile("preamble.js");
     rc = duk_peval_string(ctx, buf);
@@ -444,6 +453,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     free((void*)buf);
+
 
     // Load and evaluate main JavaScript file
     const char* filename = argc > 1 ? argv[1] : "main.js";
@@ -479,6 +489,7 @@ int main(int argc, char* argv[]) {
 
         // Find the draw() function in the global object
         js_call_global_callback(ctx, "draw", 0, NULL);
+        js_call_global_callback(ctx, "_run_timers_", 0, NULL);
         js_run_microtasks(ctx);
         
 
